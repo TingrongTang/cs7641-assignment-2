@@ -1,3 +1,4 @@
+require 'pp'
 class ClusteringProblem
   java_import 'func.KMeansClusterer'
   java_import 'func.EMClusterer'
@@ -9,26 +10,17 @@ class ClusteringProblem
   attr_reader :data_set
 
   def run_experiments
-    Benchmark.bm do |x|
-      x.report("KMeans Without Filtering") do
-        kmeans
-      end
+    kmeans
+    em_clustering
 
-      x.report("EMClustering Without Filtering") do
-        em_clustering
-      end
-
-      [:random_projections, :pca, :insignificant_ca, :ica].each do |filterer|
-        x.report("KMeans with #{filterer}") do
-          experiment(filterer) { kmeans }
-          experiment(filterer) { em_clustering }
-        end
-      end
+    [:random_projections, :pca, :insignificant_ca, :ica].each do |filterer|
+      experiment(filterer) { kmeans }
+      experiment(filterer) { em_clustering }
     end
   end
 
   def experiment(filterer, &block)
-    puts "Filtering using #{filterer}"
+    @filterer = filterer.to_s
     filtering_algo = public_send(filterer)
     filtering_algo.filter(@data_set)
     block.call
@@ -37,25 +29,34 @@ class ClusteringProblem
 
   def kmeans
     kmeans = KMeansClusterer.new(@k)
-    kmeans.estimate(@data_set)
+    bm = Benchmark.measure { kmeans.estimate(@data_set) }
 
     puts "K = #{@k}"
     labels = @csv_file.labels
-
-    kmeans.cluster_centers.each do |cc|
-      values = []
-      cc.data.size.times do |i|
-        values << cc.data.get(i)
+    
+    File.open("./data/supporting/#{self.class.to_s}_kmeans_#{@filterer}.txt", "wb") do |f|
+      kmeans.cluster_centers.each do |cc|
+        values = []
+        cc.data.size.times do |i|
+          values << cc.data.get(i)
+        end
+        f.write(Hash[labels.zip(values)].select {|k,v| v.abs > 0.01 })
+        f.write("\n")
       end
-      pp(Hash[labels.zip(values)].select {|k,v| v.abs > 0.01 })
-    end
 
+      f.write("\n")
+      f.write(bm)
+    end
   end
 
   def em_clustering
     em_clustering = EMClusterer.new(@k, 1e-6, 1000)
-    em_clustering.estimate(@data_set)
-    puts em_clustering.to_s
+    bm = Benchmark.measure { em_clustering.estimate(@data_set) }
+    File.open("./data/supporting/#{self.class.to_s}_em_#{@filterer}.txt", "wb") do |f|
+      f.write(em_clustering.to_s)
+      f.write("\n")
+      f.write(bm)
+    end
   end
 
   def ica

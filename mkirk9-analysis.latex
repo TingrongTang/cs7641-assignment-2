@@ -2,6 +2,8 @@
 \usepackage{graphicx}
 \usepackage{verbatim}
 \usepackage{color}
+\usepackage{colortbl}
+\definecolor{Yellow}{rgb}{1,0.98,0.8}
 \begin{document}
 \title{Assignment 2: CS 7641}
 \author{Matthew Kirk}
@@ -9,13 +11,15 @@
 \maketitle
 \graphicspath{ { assets/ } }
 
+\part{Introduction and Tools used and why}
+
 \part{Randomized Optimization of Neural Network Weights}
 
 \begin{enumerate}
 \item Neural Network weights for Mushroom Classification
 \item 4 Peaks
-\item Count Ones Problem 
-\item Knapsack Problem 
+\item Count Ones Problem
+\item Knapsack Problem
 \end{enumerate}
 
 \section*{Poisonous vs Edible Mushrooms Neural Network}
@@ -35,11 +39,11 @@ Correctly Classified Instances: 91.19%
 Incorrectly Classified Instances: 8.81%
 Confusion Matrix:
 
-        0       1       ?   
-0       4016    192     0   
-1       524     3392    0   
+        0       1       ?
+0       4016    192     0
+1       524     3392    0
 
-Wall time was 259 seconds on a macbook air. 
+Wall time was 259 seconds on a macbook air.
 
 This is fairly good given that it only takes 1000 iterations to find a generally good result for our neural network weights. Also it appears that most are classified properly.
 
@@ -52,9 +56,9 @@ Correctly Classified Instances: 69.03%
 Incorrectly Classified Instances: 30.97%
 Confusion Matrix:
 
-        0       1       ?   
-0       2568    1640    0   
-1       876     3040    0   
+        0       1       ?
+0       2568    1640    0
+1       876     3040    0
 
 Wall time was 561 seconds.
 
@@ -69,9 +73,9 @@ Correctly Classified Instances: 46.18%
 Incorrectly Classified Instances: 53.82%
 Confusion Matrix:
 
-        0       1       ?   
-0       3752    456     0   
-1       3916    0       0   
+        0       1       ?
+0       3752    456     0
+1       3916    0       0
 
 Wall time is 263.264000
 
@@ -83,12 +87,11 @@ The surprise for me was Simulated Annealing which I would expect to work better.
 
 Some improvements to be had would be to increase iterations but I would get weary about violating Ockham's razor when we are increasing iterations too much. Plus it will end up destroying the true error rate.
 
-
 \section*{4 Peaks Problem}
 
 GRAPHIC HERE
 
-The 4 peaks or (K peaks) is really a good study in figuring out the global vs local minima. A classical issue with most optimization approaches is that we can easily find local optima but not the global ones. The 4 peaks problem shows this very well as you can see in the graphic above. In this problem we will try to solve using Randomized Hill Climbing, a Genetic Algorith, Simulated Annealing and MIMIC. 
+The 4 peaks or (K peaks) is really a good study in figuring out the global vs local minima. A classical issue with most optimization approaches is that we can easily find local optima but not the global ones. The 4 peaks problem shows this very well as you can see in the graphic above. In this problem we will try to solve using Randomized Hill Climbing, a Genetic Algorith, Simulated Annealing and MIMIC.
 
 We don't actually have to create any data for this problem and instead can rely on using an evaluation function which will simply do this:
 \begin{verbatim}
@@ -120,7 +123,7 @@ Randomized Hill Climb & 60 & 0.12 \\ \hline
 Genetic Algorithm & 99 & 0.23 \\ \hline
 Simulated Annealing & 113 & 0.18 \\ \hline
 MIMIC & 74 & 4.04 \\ \hline
-\end{tabular} 
+\end{tabular}
 
 \subsection*{Analysis of Results}
 
@@ -160,7 +163,7 @@ def value(instance)
   data = instance.data
   volume = 0
   value = 0
-  
+
   data.size.times do |i|
     volume += @volumes[i] * data.get(i)
     value += @weights[i] * data.get(i)
@@ -176,7 +179,6 @@ end
 
 This simply will return the value as it fits into the knapsack otherwise a very small number (opposed to zero to avoid it freaking out).
 
-
 When running this problem I saw the following runtimes using the various optimization techniques:
 
 \begin{tabular}{|c|c|c|}
@@ -188,13 +190,11 @@ Simulated Annealing & 2530.28 & 0.227 \\ \hline
 MIMIC & 3156.08 & 2.67 \\ \hline
 \end{tabular}
 
-
-So as you can see the obvious winner here is MIMIC but at a cost. MIMIC has a lot of cost because it needs to recalculate distributions each time and each iteration is very costly but it does yield the best answer at 3156. Genetic algorithm is in a close second and that makes sense because this is a very disparity type function. You can keep improving until you add the wrong item and all of a sudden the knapsack is worthless. 
+So as you can see the obvious winner here is MIMIC but at a cost. MIMIC has a lot of cost because it needs to recalculate distributions each time and each iteration is very costly but it does yield the best answer at 3156. Genetic algorithm is in a close second and that makes sense because this is a very disparity type function. You can keep improving until you add the wrong item and all of a sudden the knapsack is worthless.
 
 This reason is why Simulated Annealing and Randomized Hill Climbing doesn't work is that there are a lot of dropoffs from a value of around 2000 to nothing.
 
 \section*{Count Ones Problem}
-
 
 Given a string of bits count the ones inside of it. This is similar to a K-Color type problem where by you are trying to determine how many ones are inside of the function at any given moment.
 
@@ -204,7 +204,7 @@ For this we have a simple evaluation which is:
 def value(instance)
   data = instance.data
   value = 0
-  
+
   data.size.times do |i|
     value += 1 if data.get(i) == 1
   end
@@ -217,7 +217,7 @@ TODO: Come back to explanation of this
 \section*{Changes to improve performance}
 
 analyses of your results. Why did you get the results you did? Compare and contrast the different algorithms. What sort of changes might you make to each of those algorithms to improve performance? How fast were they in terms of wall clock time? Iterations? Which algorithm performed best? How do you define best? Be creative and think of as many questions you can, and as many answers as you can. You know the drill.
- 
+
 Please note that the problems you create should be over discrete-valued parameter spaces. Bit strings are preferable.
 
 The first problem should highlight advantages of your genetic algorithm, the second of simulated annealing, and the third of MIMIC. Be creative and thoughtful. It is not required that the problems be complicated or painful. They can be simple. For example, the 4-peaks and k-color problems are rather straightforward, but illustrate relative strengths rather neatly.
@@ -229,20 +229,23 @@ As an avid food lover I enjoy both wine and mushrooms. Originally in the last as
 
 Wine was a hard dataset to work with mainly because there was no good supervised mapping from the inputs to whether a wine was above or below average. I really would like to know why and see what we can figure out about them.
 
-\section*{Mushroom Data Set}
-In this section we will first cluster the mushroom data into two clusters using both the K-Means clustering algorithm as well as EM Clustering. Finally we'll reduce dimensions using PCA, ICA, Random Projections, and Insignifican Component Analysis. Then finally we'll re-run the original clusters to see what happens.
+In this section we will analyze both data sets using KMeans and EM Clustering. Then we will follow up with applying PCA, ICA, Randomized Projections and Insignificant Component Analysis to each data set. In each dimension reduction algorithm we'll recluster the data using both KMEans and EM Clustering and see what changes.
 
-\subsection*{K-Means Clustering}
+\section*{K-Means Clustering}
 K Means Clustering is a fast clustering algorithm that will allow us to cluster unlabeled data into groups defined beforehand. In this subsection we'll discuss what happened with the K-Means analysis.
-\subsection*{Picking K}
+
+\subsection*{Mushroom Data}
 
 A good k in many cases is 2 since you want to see whether data can be separated or not. This is also true for our mushroom data set. We are originally concerned with splitting mushrooms into poisonous vs edible mushroom sets. So K for our k-means clustering will be 2.
 
-Running the analysis through 
+Running the analysis through
+
+What was yielded is this (notice that I'm not showing all attributes but instead any attributes that were different). Most of the attributes yielded zero difference between the two clusters so therefore I felt they were extraneous to display.
 
 \begin{tabular}{|c|c|c|}
 \hline
 Attribute & Cluster 1 Value & Cluster 2 Value \\ \hline
+\rowcolor{Yellow}
 class\_p & 0.5097929490766648 & 0.27868852459016397 \\ \hline
 bruises\_t & 0.33575825405707893 & 1.0 \\ \hline
 odor\_p & 0.01790710688304421 & 0.13114754098360656 \\ \hline
@@ -268,60 +271,151 @@ odor\_l & 0 & 0.36065573770491804 \\ \hline
 habitat\_m & 0 & 0.26229508196721313 \\ \hline
 \end{tabular}
 
-\subsection*{description of the kind of clusters that you got.}
-
 Remembering back to the original context of the mushroom data. The important variables as to whether it is poisonous or not were: odor, spore\_print\_color, gill\_size, gill\_spacing, and population. Notice that odor shows up a lot as well as population. Now in this case you'll notice that the two clusters we got were not completely centered around whether they were poisonous or not but a combination of many different things. In cluster 1 we have the mostly poisonous that like to live next to each other (population\_v means several) that also like to live in the woods (habitat\_d). In cluster 2 we have the mostly edible scattered (population\_s) mushrooms that like to live in grass (habitat\_g).
 
 Since we didn't supply any label to optimize against (in this case class\_p being poisonous) this all makes sense. The mushrooms are split into two very distinctive groups. They didn't completely match up with the original mapping problem of finding mushrooms that are poisonous or not but they do make sense.
 
 KMeans gave us a good result and actually ran quite fast at around 0.06 seconds! So it is definitely quick.
 
+\subsection*{Wine Data}
+
+Instead of like the above example where we wanted our K to be 2 in the wine data case I set K to equal 10. The reason for htat is because the original objective of classifying wine data was to determine what makes a good or bad quality wine and quality is in the range of 1 to 10. 
+
+Running the same KMeans analysis on the wine data set yields the following clusters centers.
+
+\scalebox{0.5}{
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
+\hline
+Attribute & Cluster 1 & Cluster 2 & Cluster 3 & Cluster 4 & Cluster 5 & Cluster 6 & Cluster 7 & Cluster 8 & Cluster 9 & Cluster 10 \\ \hline 
+fixed acidity & 7.13 & 6.74 & 6.90 & 7.34 & 7.06 & 6.92 & 8.52 & 6.83 & 8.12 & 6.95 \\ \hline
+volatile acidity & 0.31 & 0.25 & 0.28 & 0.38 & 0.31 & 0.30 & 0.51 & 0.28 & 0.50 & 0.32 \\ \hline
+citric acid & 0.35 & 0.35 & 0.35 & 0.30 & 0.36 & 0.33 & 0.28 & 0.32 & 0.26 & 0.31 \\ \hline
+residual sugar & 7.57 & 7.98 & 9.34 & 2.90 & 10.43 & 5.93 & 2.40 & 5.15 & 2.52 & 3.73 \\ \hline
+chlorides & 0.05 & 0.05 & 0.05 & 0.06 & 0.05 & 0.05 & 0.08 & 0.04 & 0.08 & 0.05 \\ \hline
+free sulfur dioxide & 30.68 & 53.95 & 52.80 & 19.83 & 56.10 & 30.40 & 8.04 & 30.21 & 17.66 & 23.92 \\ \hline
+total sulfur dioxide & 169.59 & 153.10 & 190.40 & 71.04 & 229.32 & 137.64 & 20.18 & 115.76 & 44.21 & 95.07 \\ \hline
+density & 1.00 & 0.99 & 1.00 & 0.99 & 1.00 & 0.99 & 1.00 & 0.99 & 1.00 & 0.99 \\ \hline
+pH & 3.19 & 3.20 & 3.18 & 3.23 & 3.16 & 3.20 & 3.30 & 3.19 & 3.32 & 3.21 \\ \hline
+sulphates & 0.50 & 0.50 & 0.51 & 0.56 & 0.52 & 0.49 & 0.64 & 0.49 & 0.65 & 0.50 \\ \hline
+alcohol & 10.12 & 10.17 & 9.67 & 10.82 & 9.54 & 10.50 & 10.63 & 10.89 & 10.52 & 11.01 \\ \hline
+\rowcolor{Yellow}
+quality & 5.66 & 5.94 & 5.58 & 5.72 & 5.52 & 5.90 & 5.72 & 6.04 & 5.69 & 5.98 \\ \hline
+red & 0.00 & 0.01 & 0.00 & 0.40 & 0.00 & 0.05 & 0.97 & 0.05 & 0.90 & 0.16 \\ \hline
+\end{tabular}
+}
+
+The thing that jumps out at me is that there doesn't seem to be a lot of difference between quality (which was the original goal) in these clusters. That signals to me that wine can be good or bad in just about every category whether it is high or low in acidity. It might also be an effect of KMeans in general ensuring that the data must be spherical in nature. Looking at thse clusters don't make much sense to me, as I think that the centroids are very close to each other and signal that the dataset itself is just a shotgun blast of data.
+
+Compared to the mushroom data this took a bit longer to run at 0.2 seconds isntead of 0.1. So that is yet another reason that this data is probably not well behaved.
 
 \section*{Expectation Maximization}
 
+\subsection*{Mushroom Data}
 Unlike the KMeans clustering Expectation Maximization actually solved the classification problem. Using K=2 and running the same analysis yielded the following clusters:
-
-\begin{tabular}{|c|c|c|}
-\hline
-Attribute & Cluster 1 Value & Cluster 2 Value \\ \hline
-class\_p & 1.0 & 0.020501 \\ \hline
-bruises\_t & 0.142114 & 0.659207 \\ \hline
-odor\_p & 0.066877 & 0 \\ \hline
-odor\_n & 0.00834 & 0.813783 \\ \hline
-odor\_f & 0.564274 & 0 \\ \hline
-odor\_c & 0.050158 & 0 \\ \hline
-odor\_y & 0.150473 & 0 \\ \hline
-odor\_s & 0.150473 & 0 \\ \hline
-odor\_m & 0.009405 & 0 \\ \hline
-population\_s & 0.096136 & 0.204838 \\ \hline
-population\_v & 0.725178 & 0.294239 \\ \hline
-population\_y & 0.169282 & 0.247668 \\ \hline
-population\_c & 0.009405 & 0.070762 \\ \hline
-habitat\_u & 0.071057 & 0.022346 \\ \hline
-habitat\_g & 0.183912 & 0.336121 \\ \hline
-habitat\_d & 0.331231 & 0.437626 \\ \hline
-habitat\_p & 0.263328 & 0.031657 \\ \hline
-habitat\_l & 0.150473 & 0.059589 \\ \hline
-odor\_a & 0 & 0.093108 \\ \hline
-odor\_l & 0 & 0.093108 \\ \hline
-population\_n & 0 & 0.093108 \\ \hline
-population\_a & 0 & 0.089384 \\ \hline
-habitat\_m & 0 & 0.067969 \\ \hline
-habitat\_w & 0 & 0.044692 \\ \hline
-\end{tabular}
-
+  \begin{tabular}{|c|c|c|}
+  \hline
+    Attribute & Cluster 1 Value & Cluster 2 Value \\ \hline
+    \rowcolor{Yellow}
+    class\_p & 1.0 & 0.020501 \\ \hline
+    bruises\_t & 0.142114 & 0.659207 \\ \hline
+    odor\_p & 0.066877 & 0 \\ \hline
+    odor\_n & 0.00834 & 0.813783 \\ \hline
+    odor\_f & 0.564274 & 0 \\ \hline
+    odor\_c & 0.050158 & 0 \\ \hline
+    odor\_y & 0.150473 & 0 \\ \hline
+    odor\_s & 0.150473 & 0 \\ \hline
+    odor\_m & 0.009405 & 0 \\ \hline
+    population\_s & 0.096136 & 0.204838 \\ \hline
+    population\_v & 0.725178 & 0.294239 \\ \hline
+    population\_y & 0.169282 & 0.247668 \\ \hline
+    population\_c & 0.009405 & 0.070762 \\ \hline
+    habitat\_u & 0.071057 & 0.022346 \\ \hline
+    habitat\_g & 0.183912 & 0.336121 \\ \hline
+    habitat\_d & 0.331231 & 0.437626 \\ \hline
+    habitat\_p & 0.263328 & 0.031657 \\ \hline
+    habitat\_l & 0.150473 & 0.059589 \\ \hline
+    odor\_a & 0 & 0.093108 \\ \hline
+    odor\_l & 0 & 0.093108 \\ \hline
+    population\_n & 0 & 0.093108 \\ \hline
+    population\_a & 0 & 0.089384 \\ \hline
+    habitat\_m & 0 & 0.067969 \\ \hline
+    habitat\_w & 0 & 0.044692 \\ \hline
+  \end{tabular}
 As you can see there is a definite distiction in the class\_p attribute. In one cluster we have poisonous mushrooms which have a fishy, foul, or a spicy odor. These poisonous mushroom cluster also tend to live several at a time (like we saw in the KMeans example above). They like to live in the woods as well. Now the edible mushroom cluster tends to have bruises, have no odor or an anise smell to them. They tend to be solitary or scattered. They live in the woods too and also like grass. Unlike the poisonous mushrooms they tend to have some other characteristics as well.
 
 This is quite exciting because this does map to the original problem of separating out the data into two different clusters. But there is one major downside here and that is wall time. Instead of taking 0.06 seconds this took 12.55 seconds which is much slower than KMeans. That being said it is much more robust for these clusters. That makes sense because KMeans breaks down since it tends to favor clusters that are more or less the same size as well as being spherical in nature while EM clustering doesn't care about that at all and instead tries to map the actual data.
 
+\subsection*{Wine Data}
+
+Not surprisingly the EM clustering algorithm worked better on the wine data as well again using K = 10 we were given the following clusters.
+\begin{tabulacr}{|c|c|c|c|c|c|c|c|c|c|c|}
+\hline
+\rowcolor{Yellow}
+red & 1.00 & 0.00 & 0.00 & 0.00 & 0.40 & 1.00 & 0.00 & 1.00 & 1.00 & 0.00 \\ \hline
+fixed acidity & 8.49 & 7.00 & 5.98 & 6.40 & 9.14 & 7.67 & 6.89 & 7.89 & 9.70 & 6.81 \\ \hline
+volatile acidity & 0.51 & 0.39 & 0.29 & 0.28 & 0.50 & 0.54 & 0.28 & 0.55 & 0.53 & 0.28 \\ \hline
+citric acid & 0.27 & 0.31 & 0.27 & 0.48 & 0.58 & 0.23 & 0.32 & 0.34 & 0.37 & 0.35 \\ \hline
+residual sugar & 2.12 & 5.30 & 4.45 & 1.70 & 18.82 & 2.17 & 3.66 & 5.27 & 3.67 & 10.15 \\ \hline
+chlorides & 0.08 & 0.17 & 0.17 & 0.16 & 0.09 & 0.08 & 0.04 & 0.17 & 0.09 & 0.05 \\ \hline
+free sulfur dioxide & 9.37 & 32.00 & 117.04 & 27.00 & 29.80 & 21.84 & 28.77 & 27.16 & 15.76 & 44.11 \\ \hline
+total sulfur dioxide & 23.86 & 162.00 & 242.01 & 84.00 & 222.00 & 68.41 & 117.63 & 91.39 & 38.99 & 166.64 \\ \hline
+density & 1.00 & 1.00 & 0.99 & 0.99 & 1.00 & 1.00 & 0.99 & 1.00 & 1.00 & 1.00 \\ \hline
+pH & 3.31 & 3.20 & 3.33 & 3.15 & 3.09 & 3.35 & 3.20 & 3.20 & 3.26 & 3.17 \\ \hline
+sulphates & 0.65 & 0.48 & 0.50 & 0.42 & 0.60 & 0.63 & 0.49 & 0.89 & 0.67 & 0.49 \\ \hline
+alcohol & 10.51 & 9.40 & 9.65 & 12.40 & 11.30 & 10.27 & 11.21 & 9.60 & 10.87 & 9.56 \\ \hline
+\rowcolor{Yellow}
+quality & 5.76 & 5.00 & 5.00 & 6.00 & 5.80 & 5.51 & 6.09 & 5.23 & 5.74 & 5.59 \\ \hline
+\end{tabular}
+
+As you can see from the highlighted rows Red was much better classified since it pretty much only shows up as 1 or 0 which is true since it's a binary variable. Quality though doesn't really fair any better. I think that given all of this analysis of the wine data set there is no secret potion to whether wine is good or bad quality. I think though this clustering makes more sense because EM clustering picked up on the fact that there is red and white wine. Also on top of that the differences in clusters seems to be much better pronounced especially with the sulfur dioxide attributes. 
+
 \section*{PCA}
+
+\subsection*{Mushroom Data}
+
+Using principal component analysis the important part is converting our dataset from possibly correlated values to a set of linearly uncorrelated values. The components are less than or equal to the original components. The way PCA does this is find which component has the highest variance.
+
+The most important piece of PCA is the eigenvector since it contains pretty much all of the information of how to scale the data and transform it into a new feature space. 
+
+In the case of our mushroom data we received the following eigenvalue distribution:
+
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+Min. & 1st Qu. &  Median & Mean & 3rd Qu. & Max. \\ \hline
+0.01000 & 0.01000 & 0.01000 & 0.03358 & 0.01000 & 0.73260 \\ \hline
+\end{tabular}
+
+What is interesting is that all of the significant eigenvalues (higher than 0.03) were focused on two things. Cap shape and whether the mushroom was poisonous or not. This signals to me that these have lots of variance in them which does make sense. A mushroom is either poisonous or not. But what is odd to me is that cap shape hasn't come up as important in just about any other context, I figure that PCA is probably trying to combine factors together.
+
+\subsection*{Wine Data}
+
+Applying PCA to the Wine Data yielded the following distribution of eigenvalues:
+
+\begin{tabular}{|c|c|}
+\hline
+Attribute & Eigenvalue \\ \hline
+red & 3371.67854224468 \\ \hline
+fixed acidity & 143.634541911116 \\ \hline
+volatile acidity & 17.062322327646612 \\ \hline
+citric acid & 1.770463526209397 \\ \hline
+residual sugar & 1.2259012451913587 \\ \hline
+chlorides & 0.48233278237217125 \\ \hline
+free sulfur dioxide & 0.08908276778163496 \\ \hline
+total sulfur dioxide & 0.02041465532818647 \\ \hline
+density & 0.01578217973865178 \\ \hline
+pH & 0.013030365674277837 \\ \hline
+sulphates & 0.009338174127189503 \\ \hline
+alcohol & 0.000740799074302383 \\ \hline
+quality & 3.9924997397271605e-07 \\ \hline
+\end{tabular}
+
+What a difference! As you can see the eigenvalue for red, fixed acidity and volatile acidity are quite high. What strikes me as interesting is that quality is exceptionally low! This would definitely make sense considering that all of the study done up to now has yielded almost no quality differences. All in all this does make sense. The way this data will now look is more of an emphasis on red fix acidity and volatile acidity. This correlated with what EM Clustering told us before since the biggest differences in clusters were those.
 
 \subsection*{Can you describe how the data look in the new spaces you created with the various aglorithms?}
 
 \subsection*{For PCA, what is the distribution of eigenvalues?}
 
 \subsection*{ Assuming you only generate k projections (i.e., you do dimensionality reduction), how well is the data reconstructed by the randomized projections?}
-
 
 \section*{ICA}
 
@@ -342,19 +436,15 @@ This is quite exciting because this does map to the original problem of separati
 \section*{Another Feature Selection Algorithm}
 \subsection*{Can you describe how the data look in the new spaces you created with the various aglorithms?}
 
-
 \section*{Reproduce clustering experiments on dimension reduced data}
 
 Reproduce your clustering experiments, but on the data after you've run dimensionality reduction on it.
 When you reproduced your clustering experiments on the datasets projected onto the new spaces created by ICA, PCA and RP, did you get the same clusters as before? Different clusters? Why? Why not?
 
-
 \section*{Rerun neural network on newly projected data}
 Apply the dimensionality reduction algorithms to one of your datasets from assignment \#1 (if you've reused the datasets from assignment \#1 to do experiments 1-3 above then you've already done this) and rerun your neural network learner on the newly projected data.
 
-
 When you re-ran your neural network algorithms were there any differences in performance? Speed? Anything at all?
-
 
 \section*{Rerun the neural network on clusters as features}
 Apply the clustering algorithms to the same dataset to which you just applied the dimensionality reduction algorithms (you've probably already done this), treating the clusters as if they were new features. In other words, treat the clustering algorithms as if they were dimensionality reduction algorithms. Again, rerun your neural network learner on the newly projected data.
