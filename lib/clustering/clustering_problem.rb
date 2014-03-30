@@ -21,7 +21,7 @@ class ClusteringProblem
       [:random_projections, :pca, :insignificant_ca, :ica].each do |filterer|
         x.report("KMeans with #{filterer}") do
           experiment(filterer) { kmeans }
-          experiment(filterer) { kmeans }
+          experiment(filterer) { em_clustering }
         end
       end
     end
@@ -40,10 +40,16 @@ class ClusteringProblem
     kmeans.estimate(@data_set)
 
     puts "K = #{@k}"
-    puts @csv_file.labels.join(", ")
+    labels = @csv_file.labels
+
     kmeans.cluster_centers.each do |cc|
-      puts cc.to_s
+      values = []
+      cc.data.size.times do |i|
+        values << cc.data.get(i)
+      end
+      pp(Hash[labels.zip(values)].select {|k,v| v.abs > 0.01 })
     end
+
   end
 
   def em_clustering

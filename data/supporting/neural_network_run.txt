@@ -1,0 +1,27 @@
+Evaluating opt.RandomizedHillClimbing@706aa20b with iterations 1000
+Correctly Classified Instances: 91.19%
+Incorrectly Classified Instances: 8.81%
+Confusion Matrix:
+
+        0       1       ?
+0       4016    192     0
+1       524     3392    0
+254.970000   0.830000 255.800000 (259.049000)
+Evaluating opt.ga.StandardGeneticAlgorithm@2cd7aa35 with iterations 1000
+Correctly Classified Instances: 69.03%
+Incorrectly Classified Instances: 30.97%
+Confusion Matrix:
+
+        0       1       ?
+0       2568    1640    0
+1       876     3040    0
+540.720000   2.210000 542.930000 (561.670000)
+Evaluating opt.SimulatedAnnealing@1d3ae1bc with iterations 1000
+Correctly Classified Instances: 46.18%
+Incorrectly Classified Instances: 53.82%
+Confusion Matrix:
+
+        0       1       ?
+0       3752    456     0
+1       3916    0       0
+257.900000   0.880000 258.780000 (263.264000)

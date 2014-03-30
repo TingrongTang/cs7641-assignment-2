@@ -1,0 +1,12 @@
+Evaluating opt.RandomizedHillClimbing@2055da6 with iterations 200000
+  0.100000   0.060000   0.160000 (  0.124000)
+60.0
+Evaluating opt.ga.StandardGeneticAlgorithm@731c9057 with iterations 1000
+  0.410000   0.050000   0.460000 (  0.238000)
+99.0
+Evaluating opt.SimulatedAnnealing@407943a2 with iterations 200000
+  0.200000   0.010000   0.210000 (  0.181000)
+113.0
+Evaluating opt.prob.MIMIC@42125787 with iterations 1000
+  4.120000   0.010000   4.130000 (  4.040000)
+74.0

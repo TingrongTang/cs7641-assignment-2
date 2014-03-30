@@ -11,38 +11,208 @@
 
 \part{Randomized Optimization of Neural Network Weights}
 
-
 \begin{enumerate}
-\item Neural Network weights for Wine Data and Mushroom Classification
+\item Neural Network weights for Mushroom Classification
 \item 4 Peaks
-\item K Color
+\item Count Ones Problem 
 \item Knapsack Problem 
 \end{enumerate}
 
-the results you obtained running the algorithms on the networks: why did you get the results you did? what sort of changes might you make to each of those algorithms to improve performance? Feel free to include any supporting graphs or tables. And by "feel free to", of course, I mean "do".
-a
+\section*{Poisonous vs Edible Mushrooms Neural Network}
 
-The K Color Hat Problem:
+Introduction of the Mushroom Classification problem. Harkening back to Assignment \#1 knowing how to classify mushrooms whether they are poisonous or not is extremely useful for someone who enjoys eating wild mushrooms like Morels and Chantrelles. In assignment \#1 Decision Trees worked exceptionally well but Neural Networks didn't work very well at all. So in this assignment we will try to solve the problem of finding the optimal weights for a 110-74-1 Feed Forward Neural Network.
 
-Imagine a set of prisoners who have all been lined up in a row by an executioner. They are randomly given K different color hats where K is less than the number of prisoners. Each prisoner has to determine what hat they are wearing but they cannot look on top of their head and they can only look forward for data points. Determine a good strategy for finding that.
+In the previous assignment we used Weka to find the optimal weights but in this assignment we will attempt to find weights using different optimization techniques. Namely Randomized Hill Climbing, A Genetic Algorithm, and Simulated Annealing.
 
-4 Peaks Problem:
-Imagine a line which has 4 peaks
+\subsection*{Randomized Hill Climbing}
 
-Knapsack Problem:
+Randomized hill climbing should be well suited for neural network weight finding because it is similar to how gradient descent works. The idea is to flip bits incrementally to determine which direction to go and to randomly restart in new places. In our experiment we decided to try 1000 iterations.
 
-The knapsack problem is a study in resource allocation. Imagine you have for instance a knapsack with a capacity of 30 lbs and you have an inventory of items that need to be optimally packed inside of it. For instance let's say you have a lead brick weighing 20 lbs worth \$20, a gold brick worth \$300,000 and weighing 5 lbs, then you also have 10 laptops each weighing 5 lbs and being worth \$1,000 a piece. How would you optimally pack your knapsack?
+The results are quite good:
 
-\section*{Randomized Hill Climbing}
+Evaluating opt.RandomizedHillClimbing@706aa20b with iterations 1000
+Correctly Classified Instances: 91.19%
+Incorrectly Classified Instances: 8.81%
+Confusion Matrix:
 
-\section*{Simulated Annealing}
+        0       1       ?   
+0       4016    192     0   
+1       524     3392    0   
 
-\section*{Genetic Algorithm}
+Wall time was 259 seconds on a macbook air. 
 
-\section*{MIMIC}
+This is fairly good given that it only takes 1000 iterations to find a generally good result for our neural network weights. Also it appears that most are classified properly.
 
-\section*{Comparison of algorithms}
-a description of your optimization problems, and why you feel that they are interesting and exercise the strengths and weaknesses of each approach. Think hard about this.
+\subsection*{Genetic Algorithm}
+
+Genetic Algorithms didn't do nearly as well since they are better suited for stochastic data opposed to smoother data like neural network sinks. In this case running 1000 iterations and having a population set at 10 with mutation and mating rate of 2 we found the following.
+
+Evaluating opt.ga.StandardGeneticAlgorithm@2cd7aa35 with iterations 1000
+Correctly Classified Instances: 69.03%
+Incorrectly Classified Instances: 30.97%
+Confusion Matrix:
+
+        0       1       ?   
+0       2568    1640    0   
+1       876     3040    0   
+
+Wall time was 561 seconds.
+
+You can see that this took over twice as long as the randomized hill climb and didn't yield very good results at all. Genetic algorithms didn't work very well for training our neural network.
+
+\subsection*{Simulated Annealing}
+
+We started our Simulated Annealing algorithm at a temperature of 10 and cooling of 0.999. This yielded the following
+
+Evaluating opt.SimulatedAnnealing@1d3ae1bc with iterations 1000
+Correctly Classified Instances: 46.18%
+Incorrectly Classified Instances: 53.82%
+Confusion Matrix:
+
+        0       1       ?   
+0       3752    456     0   
+1       3916    0       0   
+
+Wall time is 263.264000
+
+\subsection*{Analysis of results}
+
+This was mostly expected. Neural Networks are generally trained on gradient descent rules and randomized hill climbing operated the best. This is because it is a similar approach to solving the problem. Since we set all approaches to 1000 iterations it is obvious which one operates the best. On the other hand our simple genetic algorithm worked ok but really took a long time to run. At over twice the wall time compared to the others it is not a good approach to building this neural net. That makes sense to me because it is well suited for data that has lots of local minima. Neural Networks in many cases don't have a multitude of local minima.
+
+The surprise for me was Simulated Annealing which I would expect to work better. I suppose that since this doesn't have lots of peaks in the error plane that simulated annealing breaks down a bit.
+
+Some improvements to be had would be to increase iterations but I would get weary about violating Ockham's razor when we are increasing iterations too much. Plus it will end up destroying the true error rate.
+
+
+\section*{4 Peaks Problem}
+
+GRAPHIC HERE
+
+The 4 peaks or (K peaks) is really a good study in figuring out the global vs local minima. A classical issue with most optimization approaches is that we can easily find local optima but not the global ones. The 4 peaks problem shows this very well as you can see in the graphic above. In this problem we will try to solve using Randomized Hill Climbing, a Genetic Algorith, Simulated Annealing and MIMIC. 
+
+We don't actually have to create any data for this problem and instead can rely on using an evaluation function which will simply do this:
+\begin{verbatim}
+public double value(Instance d) {
+        Vector data = d.getData();
+        int i = 0;
+        while (i < data.size() && data.get(i) == 1) {
+            i++;
+        }
+        int head = i;
+        i = data.size() - 1;
+        while (i >= 0 && data.get(i) == 0) {
+            i--;
+        }
+        int tail = data.size() - 1 - i;
+        int r = 0;
+        if (head > t && tail > t) {
+            r = data.size();
+        }
+        return Math.max(tail, head) + r;
+    }
+\end{verbatim}
+The results we got from running the various experiments were:
+
+\begin{tabular}{|c|c|c|}
+\hline
+Algorithm & Value & Wall Time \\ \hline
+Randomized Hill Climb & 60 & 0.12 \\ \hline
+Genetic Algorithm & 99 & 0.23 \\ \hline
+Simulated Annealing & 113 & 0.18 \\ \hline
+MIMIC & 74 & 4.04 \\ \hline
+\end{tabular} 
+
+\subsection*{Analysis of Results}
+
+The clear winner here is Simulated Annealing and that makes sense. Simulated Annealing does an exceptional job at finding global max given a stochastic function with lots of peaks and valleys. Since it starts off hot and finds very different peaks it can then zero in on what is important later on.
+
+The second best algorithm was the genetic algorithm which also makes sense because genetic algorithms are good at mutating and finding global minimum in very noisy data. It took a bit longer to run since it is a more complicated process although it does fairly well.
+
+MIMIC was third and the reason for that is unlike the other algorithms MIMIC pays more attention to the distribution of data and yet in this case the distribution doesn't really matter. It's just noise. That makes sense, also I'd say that running at 4 seconds was really long and wouldn't be great to use in any sort of capacity for a problem like this.
+
+Randomized Hill Climb did OK but really had a bad result because it is so focused on finding those smooth gradients up. IT has a very tough time getting over little disparities and therefore it wouldn't do well in this problem.
+
+\section*{Knapsack Problem}
+
+The Knapsack problem is simple in that a person has a knapsack that they want to fill to achieve the optimal storage of what they have. So for instance if we had 4 2 lbs bricks that we wanted to store in a knapsack that can hold 3 lbs how would we do that? Obviously it'd be just to store one brick. But if we were to complicate things further how would we do the following.
+
+Let's say we have 40 items, the max weight of our knapsack is 50 and the max volume is 50. Let's just say that each item has a random weight and volume between 0 and the max of each. Writing this more explicitly we initialize our problem thusly.
+
+\begin{verbatim}
+  def initialize(items = 40, copies = 4, max_weight = 50, max_volume = 50)
+    @num_items = items
+    @copies_each = copies
+    @max_weight = max_weight
+    @max_volume = max_volume
+    @knapsack_volume = @max_volume * @num_items * @copies_each * 0.4
+
+    @copies = Array.new(@num_items) { @copies_each }.to_java(Java::int)
+    @weights = Array.new(@num_items) { rand * @max_weight }.to_java(Java::double)
+    @volumes = Array.new(@num_items) { rand * @max_volume }.to_java(Java::double)
+    @ranges = Array.new(@num_items) { @copies_each + 1 }.to_java(Java::int)
+  end
+\end{verbatim}
+
+Then from there we need to have a function to evaluate against and simply it is
+
+\begin{verbatim}
+def value(instance)
+  data = instance.data
+  volume = 0
+  value = 0
+  
+  data.size.times do |i|
+    volume += @volumes[i] * data.get(i)
+    value += @weights[i] * data.get(i)
+  end
+
+  if volume > @max_volume
+    1e-10 * (@max_volume_sum - volume)
+  else
+    value
+  end
+end
+\end{verbatim}
+
+This simply will return the value as it fits into the knapsack otherwise a very small number (opposed to zero to avoid it freaking out).
+
+
+When running this problem I saw the following runtimes using the various optimization techniques:
+
+\begin{tabular}{|c|c|c|}
+\hline
+Algorithm & Value & Time \\ \hline
+Randomized Hill Climbing & 2483.76 & 0.14 \\ \hline
+Genetic Algorithm & 3046.53 & 0.24 \\ \hline
+Simulated Annealing & 2530.28 & 0.227 \\ \hline
+MIMIC & 3156.08 & 2.67 \\ \hline
+\end{tabular}
+
+
+So as you can see the obvious winner here is MIMIC but at a cost. MIMIC has a lot of cost because it needs to recalculate distributions each time and each iteration is very costly but it does yield the best answer at 3156. Genetic algorithm is in a close second and that makes sense because this is a very disparity type function. You can keep improving until you add the wrong item and all of a sudden the knapsack is worthless. 
+
+This reason is why Simulated Annealing and Randomized Hill Climbing doesn't work is that there are a lot of dropoffs from a value of around 2000 to nothing.
+
+\section*{Count Ones Problem}
+
+
+Given a string of bits count the ones inside of it. This is similar to a K-Color type problem where by you are trying to determine how many ones are inside of the function at any given moment.
+
+For this we have a simple evaluation which is:
+
+\begin{verbatim}
+def value(instance)
+  data = instance.data
+  value = 0
+  
+  data.size.times do |i|
+    value += 1 if data.get(i) == 1
+  end
+  value
+end
+\end{verbatim}
+
+TODO: Come back to explanation of this
 
 \section*{Changes to improve performance}
 
@@ -55,44 +225,94 @@ The first problem should highlight advantages of your genetic algorithm, the sec
 \part{Unsupervised Learning}
 \section*{The data Sets}
 
-Wine data and Mushroom data.
+As an avid food lover I enjoy both wine and mushrooms. Originally in the last assignment I was curious as to whether one could crack the code as to whether the wild mushrooms were poisonous or edible and what sort of characteristics were important in identifying them. That prooved to work quite well under a decision tree but would still like to know more about the principal components or any important feature of this data set.
 
-a discussion of your datasets, and why they're interesting: If you're using the same datasets as before at least briefly remind us of what they are so we don't have to revisit your old assignment write-up.
-e
+Wine was a hard dataset to work with mainly because there was no good supervised mapping from the inputs to whether a wine was above or below average. I really would like to know why and see what we can figure out about them.
 
-Now its time to explore unsupervised learning algorithms. This part of the assignment asks you to use some of the clustering and dimensionality reduction algorithms weve looked at in class and to revisit earlier assignments. The goal is for you to think about how these algorithms are the same as, different from, and interact with your earlier work.
+\section*{Mushroom Data Set}
+In this section we will first cluster the mushroom data into two clusters using both the K-Means clustering algorithm as well as EM Clustering. Finally we'll reduce dimensions using PCA, ICA, Random Projections, and Insignifican Component Analysis. Then finally we'll re-run the original clusters to see what happens.
 
-The same ground rules apply for programming languages.
-
-The Problems Given to You
-
-\section*{K-Means Clustering}
-
+\subsection*{K-Means Clustering}
+K Means Clustering is a fast clustering algorithm that will allow us to cluster unlabeled data into groups defined beforehand. In this subsection we'll discuss what happened with the K-Means analysis.
 \subsection*{Picking K}
 
-K for wine data should be 10. Since our initial objective is to classify into categories of quality.
+A good k in many cases is 2 since you want to see whether data can be separated or not. This is also true for our mushroom data set. We are originally concerned with splitting mushrooms into poisonous vs edible mushroom sets. So K for our k-means clustering will be 2.
+
+Running the analysis through 
+
+\begin{tabular}{|c|c|c|}
+\hline
+Attribute & Cluster 1 Value & Cluster 2 Value \\ \hline
+class\_p & 0.5097929490766648 & 0.27868852459016397 \\ \hline
+bruises\_t & 0.33575825405707893 & 1.0 \\ \hline
+odor\_p & 0.01790710688304421 & 0.13114754098360656 \\ \hline
+odor\_n & 0.49356463346390606 & 0 \\ \hline
+odor\_f & 0.2820369334079463 & 0.14754098360655737 \\ \hline
+odor\_c & 0.026860660324566313 & 0 \\ \hline
+odor\_y & 0.08058198097369894 & 0 \\ \hline
+odor\_s & 0.08058198097369894 & 0 \\ \hline
+population\_s & 0.08729714605484053 & 0.639344262295082 \\ \hline
+population\_n & 0.020145495243424735 & 0.26229508196721313 \\ \hline
+population\_a & 0.053721320649132626 & 0 \\ \hline
+population\_v & 0.5651930609960829 & 0 \\ \hline
+population\_y & 0.22607722439843314 & 0.09836065573770492 \\ \hline
+population\_c & 0.04756575265808618 & 0 \\ \hline
+habitat\_u & 0.03245663122551763 & 0.13934426229508198 \\ \hline
+habitat\_g & 0.23223279238947958 & 0.5 \\ \hline
+habitat\_d & 0.4404029099048685 & 0 \\ \hline
+habitat\_p & 0.14661443760492446 & 0.09836065573770492 \\ \hline
+habitat\_w & 0.026860660324566313 & 0 \\ \hline
+habitat\_l & 0.11639619473978736 & 0 \\ \hline
+odor\_a & 0 & 0.36065573770491804 \\ \hline
+odor\_l & 0 & 0.36065573770491804 \\ \hline
+habitat\_m & 0 & 0.26229508196721313 \\ \hline
+\end{tabular}
 
 \subsection*{description of the kind of clusters that you got.}
 
-\subsection*{Why did you get the clusters you did?} 
+Remembering back to the original context of the mushroom data. The important variables as to whether it is poisonous or not were: odor, spore\_print\_color, gill\_size, gill\_spacing, and population. Notice that odor shows up a lot as well as population. Now in this case you'll notice that the two clusters we got were not completely centered around whether they were poisonous or not but a combination of many different things. In cluster 1 we have the mostly poisonous that like to live next to each other (population\_v means several) that also like to live in the woods (habitat\_d). In cluster 2 we have the mostly edible scattered (population\_s) mushrooms that like to live in grass (habitat\_g).
 
-\subsection*{Do they make "sense"?}
+Since we didn't supply any label to optimize against (in this case class\_p being poisonous) this all makes sense. The mushrooms are split into two very distinctive groups. They didn't completely match up with the original mapping problem of finding mushrooms that are poisonous or not but they do make sense.
 
-\subsection*{If you used data that already had labels (for example data from a classification problem from assignment \#1) did the clusters line up with the labels? Do they otherwise line up naturally? Why or why not?} 
+KMeans gave us a good result and actually ran quite fast at around 0.06 seconds! So it is definitely quick.
 
-\subsection*{Can you describe how the data look in the new spaces you created with the various aglorithms?}
 
 \section*{Expectation Maximization}
 
-\subsection*{description of the kind of clusters that you got.}
+Unlike the KMeans clustering Expectation Maximization actually solved the classification problem. Using K=2 and running the same analysis yielded the following clusters:
 
-\subsection*{Why did you get the clusters you did?} 
+\begin{tabular}{|c|c|c|}
+\hline
+Attribute & Cluster 1 Value & Cluster 2 Value \\ \hline
+class\_p & 1.0 & 0.020501 \\ \hline
+bruises\_t & 0.142114 & 0.659207 \\ \hline
+odor\_p & 0.066877 & 0 \\ \hline
+odor\_n & 0.00834 & 0.813783 \\ \hline
+odor\_f & 0.564274 & 0 \\ \hline
+odor\_c & 0.050158 & 0 \\ \hline
+odor\_y & 0.150473 & 0 \\ \hline
+odor\_s & 0.150473 & 0 \\ \hline
+odor\_m & 0.009405 & 0 \\ \hline
+population\_s & 0.096136 & 0.204838 \\ \hline
+population\_v & 0.725178 & 0.294239 \\ \hline
+population\_y & 0.169282 & 0.247668 \\ \hline
+population\_c & 0.009405 & 0.070762 \\ \hline
+habitat\_u & 0.071057 & 0.022346 \\ \hline
+habitat\_g & 0.183912 & 0.336121 \\ \hline
+habitat\_d & 0.331231 & 0.437626 \\ \hline
+habitat\_p & 0.263328 & 0.031657 \\ \hline
+habitat\_l & 0.150473 & 0.059589 \\ \hline
+odor\_a & 0 & 0.093108 \\ \hline
+odor\_l & 0 & 0.093108 \\ \hline
+population\_n & 0 & 0.093108 \\ \hline
+population\_a & 0 & 0.089384 \\ \hline
+habitat\_m & 0 & 0.067969 \\ \hline
+habitat\_w & 0 & 0.044692 \\ \hline
+\end{tabular}
 
-\subsection*{Do they make "sense"?}
+As you can see there is a definite distiction in the class\_p attribute. In one cluster we have poisonous mushrooms which have a fishy, foul, or a spicy odor. These poisonous mushroom cluster also tend to live several at a time (like we saw in the KMeans example above). They like to live in the woods as well. Now the edible mushroom cluster tends to have bruises, have no odor or an anise smell to them. They tend to be solitary or scattered. They live in the woods too and also like grass. Unlike the poisonous mushrooms they tend to have some other characteristics as well.
 
-\subsection*{If you used data that already had labels (for example data from a classification problem from assignment \#1) did the clusters line up with the labels? Do they otherwise line up naturally? Why or why not?} 
-
-\subsection*{Can you describe how the data look in the new spaces you created with the various aglorithms?}
+This is quite exciting because this does map to the original problem of separating out the data into two different clusters. But there is one major downside here and that is wall time. Instead of taking 0.06 seconds this took 12.55 seconds which is much slower than KMeans. That being said it is much more robust for these clusters. That makes sense because KMeans breaks down since it tends to favor clusters that are more or less the same size as well as being spherical in nature while EM clustering doesn't care about that at all and instead tries to map the actual data.
 
 \section*{PCA}
 
