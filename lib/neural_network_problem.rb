@@ -13,16 +13,21 @@ class NeuralNetworkProblem
   include Optimization::SimulatedAnnealing
   include Optimization::Evaluation
 
-  def initialize
+  def initialize(instances = [])
     back_prop_factory = FeedForwardNeuralNetworkFactory.new
-    @instances = []
-    CSV.foreach('./data/agaricus-lepiota/agaricus-lepiota-numeric.csv', :headers => true) do |row|
-      points = row.to_hash.values[1..-1].map(&:to_f).to_java(Java::double)
-      output_layer = [row['class_p'].to_i]
 
-      instance = Instance.new(points)
-      instance.label = Instance.new(output_layer.to_java(Java::double))
-      @instances << instance
+    if instances.empty?
+      @instances = []
+      CSV.foreach('./data/agaricus-lepiota/agaricus-lepiota-numeric.csv', :headers => true) do |row|
+        points = row.to_hash.values[1..-1].map(&:to_f).to_java(Java::double)
+        output_layer = [row['class_p'].to_i]
+
+        instance = Instance.new(points)
+        instance.label = Instance.new(output_layer.to_java(Java::double))
+        @instances << instance
+      end
+    else
+      @instances = instances
     end
 
     @data_set = DataSet.new(@instances.to_java(Instance))

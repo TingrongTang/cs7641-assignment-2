@@ -13,7 +13,8 @@ class ClusteringProblem
     kmeans
     em_clustering
 
-    [:random_projections, :pca, :insignificant_ca, :ica].each do |filterer|
+    [:random_projections, :pca, :insignificant_ca, :ica].reverse.each do |filterer|
+      puts filterer
       experiment(filterer) { kmeans }
       experiment(filterer) { em_clustering }
     end
@@ -33,14 +34,14 @@ class ClusteringProblem
 
     puts "K = #{@k}"
     labels = @csv_file.labels
-    
+
     File.open("./data/supporting/#{self.class.to_s}_kmeans_#{@filterer}.txt", "wb") do |f|
       kmeans.cluster_centers.each do |cc|
         values = []
         cc.data.size.times do |i|
           values << cc.data.get(i)
         end
-        f.write(Hash[labels.zip(values)].select {|k,v| v.abs > 0.01 })
+        f.write(Hash[labels.zip(values)].select {|k,v| v && v.abs > 0.01 })
         f.write("\n")
       end
 
@@ -56,6 +57,24 @@ class ClusteringProblem
       f.write(em_clustering.to_s)
       f.write("\n")
       f.write(bm)
+    end
+  end
+
+  def compare_projections(first, second)
+
+    ica.filter(@data_set)
+    ica.reverse(@data_set)
+
+    labels.each_with_index do |lab, i|
+      if first_point.get(i).zero? == second_point.get(i).zero?
+        next
+      end
+
+      vector = [first_point, second_point, pca_first, pca_second, ica_first, ica_second, rand_first, rand_second, insig_first, insig_second].map do |proj|
+        "%0.2f" % proj.get(i)
+      end
+
+      puts "#{lab} & #{vector.join(' & ')} \\\\ \\hline"
     end
   end
 
